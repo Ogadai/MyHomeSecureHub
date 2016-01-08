@@ -1,0 +1,12 @@
+{
+  "name": "MyHomeSecureHub",
+  "version": "0.0.1",
+  "description": "Hub for home secure service",
+  "author": "Andy Lee <andy.lee.surfer@gmail.com>",
+  "scripts": {
+    "start": "node server.js",
+    "watch": "screen npm run watch-js & npm run watch-server",
+    "watch-js": "watch -n 10 git pull &",
+    "watch-server": "nodemon server.js"
+  }
+}
