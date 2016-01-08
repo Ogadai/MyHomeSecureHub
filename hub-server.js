@@ -26,10 +26,15 @@ wsServer.on("request", function(request) {
         if (!alarmed && data.name === 'PIR') {
           sendMessage({ name: 'Alarm', message: 'on' });
           alarmed = true;
+          
           setTimeout(function() {
-            sendMessage({ name: 'Alarm', message: 'off' });
-            alarmed = false;
-          }, 5000)
+            sendMessage({ name: 'Alarm', message: 'warning' });
+              
+            setTimeout(function() {
+                sendMessage({ name: 'Alarm', message: 'off' });
+                alarmed = false;
+              }, 5000)
+          }, 2000)
         }
       }
     })
