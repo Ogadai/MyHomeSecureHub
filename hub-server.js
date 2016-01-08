@@ -24,11 +24,11 @@ wsServer.on("request", function(request) {
         console.log('Received message "' + JSON.stringify(data) + '"');
 
         if (!alarmed && data.name === 'PIR') {
-          sendMessage({ name: 'Alarm', message: 'on' });
+          sendMessage({ name: 'Alarm', message: 'warning' });
           alarmed = true;
           
           setTimeout(function() {
-            sendMessage({ name: 'Alarm', message: 'warning' });
+            sendMessage({ name: 'Alarm', message: 'on' });
               
             setTimeout(function() {
                 sendMessage({ name: 'Alarm', message: 'off' });
