@@ -5,8 +5,7 @@
   "author": "Andy Lee <andy.lee.surfer@gmail.com>",
   "scripts": {
     "start": "node server.js",
-    "watch": "screen npm run watch-js & npm run watch-server",
-    "watch-js": "watch -n 60 git pull &",
-    "watch-server": "nodemon server.js"
+    "watch-git": "watch -n 10 git pull &",
+    "watch": "nodemon server.js"
   }
 }
