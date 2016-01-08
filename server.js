@@ -1,1 +1,3 @@
-console.info('Starting server - new')
+require('./hub-server');
+
+console.info('Starting server - updated');
