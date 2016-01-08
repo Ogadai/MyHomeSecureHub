@@ -1,1 +1,1 @@
-console.info('Starting server')
+console.info('Starting server - updated')
