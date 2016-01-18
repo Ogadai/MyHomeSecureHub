@@ -1,51 +1,49 @@
 var WebSocketServer = require('websocket').server,
-    http            = require('http');
+    NodeHandler     = require('./node-handler')
+    Sensor          = require('./sensor')
+    http            = require('http'),
+    events          = require('events');
 
-var server = http.createServer(function(request, response) {}),
-    socketPort = 1337;
+function HubServer(socketPort) {
+    var self = this,
+        nodeHandlers = {},
+        sensors = {};
+    events.EventEmitter.call(this);
 
-server.listen(socketPort, function() {
-  console.log('Listing for hub messages on port ' + socketPort)
-});
+    var server = http.createServer(function(request, response) {});
+    server.listen(socketPort, function() {
+      console.log('Listing for hub messages on port ' + socketPort)
+    });
 
-var wsServer = new WebSocketServer({
-  httpServer: server
-});
+    var wsServer = new WebSocketServer({
+      httpServer: server
+    });
 
-wsServer.on("request", function(request) {
-  var connection = request.accept('echo-protocol', request.origin);
-  console.log('Connection opened');
+    wsServer.on("request", function(request) {
+      var connection = request.accept('echo-protocol', request.origin),
+          handler = new NodeHandler(connection);
 
-  var alarmed = false
-  connection
-    .on('message', function(message) {
-      if (message.type = 'utf8') {
-        var data = JSON.parse(message.utf8Data);
-        console.log('Received message "' + JSON.stringify(data) + '"');
+      handler
+        .on('initialised', function () {
+            nodeHandlers[handler.name()] = handler;
+        })
+        .on('close', function () {
+            delete nodeHandlers[handler.name()];
+        })
+        .on('sensor', function (data) {
+            var sensorName = handler.name() + '.' + data.name;
+            if (sensors[sensorName]) {
+                sensors[sensorName]._message(data);
+            }
+        });
+    })
 
-        if (!alarmed && data.name === 'PIR') {
-          sendMessage({ name: 'Alarm', message: 'warning' });
-          alarmed = true;
-          
-          setTimeout(function() {
-            sendMessage({ name: 'Alarm', message: 'on' });
-              
-            setTimeout(function() {
-                sendMessage({ name: 'Alarm', message: 'off' });
-                alarmed = false;
-              }, 5000)
-          }, 2000)
+    self.getSensor = function (name) {
+        if (!sensors[name]) {
+            sensors[name] = new Sensor();
         }
-      }
-    })
-    .on('close', function(c) {
-      console.log('Closed connection');
-    })
-
-    function sendMessage(data) {
-      var message = JSON.stringify(data);
-
-      console.log('Sending message "' + message + '"')
-      connection.sendUTF(message);
+        return sensors[name];
     }
-})
+}
+HubServer.prototype.__proto__ = events.EventEmitter.prototype;
+module.exports = HubServer;

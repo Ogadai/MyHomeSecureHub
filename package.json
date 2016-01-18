@@ -7,5 +7,8 @@
     "start": "node server.js",
     "watch-git": "watch -n 10 git pull &",
     "watch": "nodemon server.js"
+  },
+  "dependencies": {
+    "websocket": "^1.0.22"
   }
 }
