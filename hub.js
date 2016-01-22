@@ -1,5 +1,5 @@
 ﻿
-function Hub(settings, webClient, hubServer) {
+function Hub(settings, webClient, hubServer, stateList) {
     webClient
         .on('connected', function () {
             var users = settings.users.map(function (u) {
@@ -22,24 +22,29 @@ function Hub(settings, webClient, hubServer) {
             });
         })
         .on('changestates', function (data) {
-            var statesMessage = '';
             data.States.forEach(function (s) {
-                if (s.Active) {
-                    if (statesMessage.length) statesMessage += ', ';
-                    statesMessage += s.Name;
-                }
+                console.log('Initialising state: ' + s.Name + '=' + s.Active);
+                stateList.getState(s.Name).active(s.Active);
             });
-
-            if (statesMessage.length) {
-                console.log('Active States: ' + statesMessage);
-            }
         })
         .on('firstuserhome', function (data) {
             console.log('First user arrived home: ' + data.UserName);
+            stateList.getState('Away').active(false);
         })
         .on('lastuseraway', function (data) {
             console.log('Last user has left: ' + data.UserName);
+            stateList.getState('Away').active(true);
         })
+
+    stateList.on('statechange', function (name, value) {
+        console.log('Updating state: ' + name + '=' + value);
+        webClient.send({
+            Method: 'ChangeStates',
+            States: [
+                { Name: name, Active: value }
+            ]
+        });
+    });
 }
 
 module.exports = Hub;

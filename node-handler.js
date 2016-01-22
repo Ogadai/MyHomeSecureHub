@@ -20,7 +20,7 @@ function NodeHandler(connection) {
               if (data.method === 'initialise') {
                   name = data.name;
                   console.log('Initialised connection with ' + name);
-                  self.emit('intialised');
+                  self.emit('initialised');
               } else {
                   self.emit(data.method, data);
               }
