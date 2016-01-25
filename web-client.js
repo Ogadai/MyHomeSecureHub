@@ -3,6 +3,7 @@ var W3CWebSocket = require('websocket').w3cwebsocket,
 
 function WebClient(serverAddr) {
     var client = null,
+	connected = false,
         self = this,
         openedOnce = false,
         bufferedMessages = [];
@@ -10,7 +11,7 @@ function WebClient(serverAddr) {
     events.EventEmitter.call(this);
 
     this.send = function (data) {
-        if (client) {
+        if (connected) {
             client.send(JSON.stringify(data));
         } else {
             bufferedMessages.push(data);
@@ -26,6 +27,7 @@ function WebClient(serverAddr) {
 
             self.emit(openedOnce ? 'reconnected' : 'connected');
             openedOnce = true;
+	    connected = true;
 
             clearBuffer();
         };
@@ -33,12 +35,14 @@ function WebClient(serverAddr) {
         client.onclose = function () {
             console.log('Disconnected from Azure. Attempting reconnect in 10 seconds');
             client = null;
+	    connected = false;
             setTimeout(self.connect, 10000);
         };
 
         client.onerror = function () {
             console.log('Error connecting to Azure. Attempting reconnect in 10 seconds');
             client = null;
+	    connected = false;
             setTimeout(self.connect, 10000);
         };
 
