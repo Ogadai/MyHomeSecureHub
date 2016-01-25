@@ -19,7 +19,7 @@ function NodeHandler(connection) {
               var data = JSON.parse(message.utf8Data);
               if (data.method === 'initialise') {
                   name = data.name;
-                  console.log('Initialised connection with ' + name);
+                  console.log((new Date()).toLocaleTimeString() + ': Initialised connection with ' + name);
                   self.emit('initialised');
               } else {
                   self.emit(data.method, data);
@@ -28,7 +28,7 @@ function NodeHandler(connection) {
       })
       .on('close', function (c) {
           if (name) {
-              console.log('Closed connection with ' + name);
+              console.log((new Date()).toLocaleTimeString() + ': Closed connection with ' + name);
               self.emit('close');
           }
       })

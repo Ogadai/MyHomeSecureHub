@@ -22,7 +22,7 @@ function WebClient(serverAddr) {
         console.log((openedOnce ? 'Reconnecting' : 'Connecting') + ' to Azure - ' + serverAddr);
 
         client.onopen = function () {
-            console.log((openedOnce ? 'Reconnected' : 'Connected') + ' to Azure');
+            console.log((new Date()).toLocaleTimeString() + ': ' + (openedOnce ? 'Reconnected' : 'Connected') + ' to Azure');
 
             self.emit(openedOnce ? 'reconnected' : 'connected');
             openedOnce = true;

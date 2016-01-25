@@ -37,7 +37,7 @@ function Hub(settings, webClient, hubServer, stateList) {
         })
 
     stateList.on('statechange', function (name, value) {
-        console.log('Updating state: ' + name + '=' + value);
+        console.log((new Date()).toLocaleTimeString() + ': Updating state: ' + name + '=' + value);
         webClient.send({
             Method: 'ChangeStates',
             States: [
