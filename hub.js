@@ -13,13 +13,13 @@ function Hub(settings, webClient, hubServer, stateList) {
                 Users: users,
                 States: settings.states
             });
-        })
-        .on('reconnected', function () {
-            webClient.send({
-                Method: 'Reconnect',
-                Name: settings.identification.name,
-                Token: settings.identification.token
-            });
+
+	    webClient.send({
+		Method: 'ChangeStates',
+		States: settings.states.map(function(s) {
+		    return { Name: s, Active: stateList.getState(s).active() };
+		})
+	    });
         })
         .on('changestates', function (data) {
             data.States.forEach(function (s) {
@@ -45,6 +45,10 @@ function Hub(settings, webClient, hubServer, stateList) {
             ]
         });
     });
+
+    setInterval(function() {
+	webClient.send({ Method: 'ChangeStates', States: []});
+    }, 60 * 1000);
 }
 
 module.exports = Hub;

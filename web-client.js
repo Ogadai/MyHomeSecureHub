@@ -25,7 +25,7 @@ function WebClient(serverAddr) {
         client.onopen = function () {
             console.log((new Date()).toLocaleTimeString() + ': ' + (openedOnce ? 'Reconnected' : 'Connected') + ' to Azure');
 
-            self.emit(openedOnce ? 'reconnected' : 'connected');
+            self.emit('connected');
             openedOnce = true;
 	    connected = true;
 
