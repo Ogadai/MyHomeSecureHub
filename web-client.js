@@ -12,7 +12,12 @@ function WebClient(serverAddr) {
 
     this.send = function (data) {
         if (connected) {
-            client.send(JSON.stringify(data));
+	    try {
+                client.send(JSON.stringify(data));
+	    } catch (e) {
+		console.error("Error sending message to Azure - " + e.message);
+                bufferedMessages.push(data);
+	    }
         } else {
             bufferedMessages.push(data);
         }

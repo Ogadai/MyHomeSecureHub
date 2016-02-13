@@ -14,20 +14,44 @@ var webClient = new WebClient(settings.addr),
 
 webClient.connect();
 
+var rulesApi = {
+    state: stateList.getState,
+    sensor: hubServer.getSensor,
+    controller: hubServer.getController,
+    timer: hubServer.getTimer,
+    user: getUser
+};
+
+function getUser(arg) {
+    for(var n = 0; n < settings.users.length; n++) {
+	var user = settings.users[n];
+        if (typeof arg === 'function') {
+	    if (arg(user)) return user;
+        } else {
+	    if (user.name === arg) return user;
+        }
+    }
+    return null;
+}
+
 var rulesPath = path.join(__dirname, settings.rules);
 fs.readdirSync(rulesPath).forEach(function (file) {
     var ruleSet = require(path.join(settings.rules, file));
-    ruleSet(stateList.getState, hubServer.getSensor, hubServer.getController, hubServer.getTimer);
+    ruleSet(rulesApi);
 });
 
 var evening = stateList.getState('Evening'),
     night = stateList.getState('Night'),
-    morning = stateList.getState('Morning');
+    morning = stateList.getState('Morning'),
+    away = stateList.getState('Away');
 
 keypress(process.stdin);
 process.stdin.on('keypress', function (ch, key) {
     if (key) {
         switch (key.name) {
+	case 'a':
+	    away.active(!away.active());
+	    break;
         case 'e':
             setTimeState('Evening');
             break;
