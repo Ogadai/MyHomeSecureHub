@@ -24,7 +24,7 @@ function WebClient(serverAddr) {
     }
 
     this.connect = function() {
-        client = new W3CWebSocket(serverAddr);
+        client = new W3CWebSocket(serverAddr, 'echo-protocol');
         console.log((openedOnce ? 'Reconnecting' : 'Connecting') + ' to Azure - ' + serverAddr);
 
         client.onopen = function () {
