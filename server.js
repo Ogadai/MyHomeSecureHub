@@ -8,7 +8,7 @@ var WebClient = require('./web-client'),
     keypress = require("keypress");
 
 var webClient = new WebClient(settings.addr),
-    hubServer = new HubServer(settings.hubPort),
+    hubServer = new HubServer(settings.hubPort, nodeSettings()),
     stateList = new StateList(settings.states),
     hub = new Hub(settings, webClient, hubServer, stateList);
 
@@ -32,6 +32,13 @@ function getUser(arg) {
         }
     }
     return null;
+}
+
+function nodeSettings() {
+    return {
+        addr: settings.addr,
+        identification: settings.identification
+    };
 }
 
 var rulesPath = path.join(__dirname, settings.rules);

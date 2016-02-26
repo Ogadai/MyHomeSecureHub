@@ -6,7 +6,7 @@ var WebSocketServer = require('websocket').server,
     http            = require('http'),
     events          = require('events');
 
-function HubServer(socketPort) {
+function HubServer(socketPort, nodeSettings) {
     var self = this,
         nodeHandlers = {},
         sensors = {},
@@ -30,6 +30,11 @@ function HubServer(socketPort) {
         .on('initialised', function () {
             nodeHandlers[handler.name()] = handler;
             resetControllers(handler.name());
+
+            handler.send({
+                method: 'settings',
+                settings: nodeSettings
+            });
         })
         .on('close', function () {
             delete nodeHandlers[handler.name()];

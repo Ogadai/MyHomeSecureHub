@@ -35,6 +35,10 @@ function Hub(settings, webClient, hubServer, stateList) {
             console.log('Last user has left: ' + data.UserName);
             stateList.getState('Away').active(true);
         })
+        .on('cameracommand', function (data) {
+            console.log('Requested node "' + data.Node + '" camera to ' + (data.Active ? 'on' : 'off'));
+            hubServer.getController(data.Node + '.camera').state(data.Active ? 'on' : 'off');
+        })
 
     stateList.on('statechange', function (name, value) {
         console.log((new Date()).toLocaleTimeString() + ': Updating state: ' + name + '=' + value);
