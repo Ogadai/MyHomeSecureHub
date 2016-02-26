@@ -10,6 +10,9 @@ function Hub(settings, webClient, hubServer, stateList) {
                 Method: 'Initialise',
                 Name: settings.identification.name,
                 Token: settings.identification.token,
+		Latitude: settings.location.latitude,
+		Longitude: settings.location.longitude,
+		Radius: settings.location.radius,
                 Users: users,
                 States: settings.states
             });
@@ -46,9 +49,19 @@ function Hub(settings, webClient, hubServer, stateList) {
         });
     });
 
+    this.userTaggedHome = function(userName) {
+	webClient.send({
+            Method: 'UserTaggedHome',
+            UserName: userName
+        });
+    }
+
     setInterval(function() {
-	webClient.send({ Method: 'ChangeStates', States: []});
-    }, 60 * 1000);
+	webClient.send({
+	    Method: 'ChangeStates',
+	    States: []
+	});
+    }, 60000);
 }
 
 module.exports = Hub;

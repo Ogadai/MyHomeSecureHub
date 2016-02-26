@@ -19,16 +19,26 @@ var rulesApi = {
     sensor: hubServer.getSensor,
     controller: hubServer.getController,
     timer: hubServer.getTimer,
-    user: getUser
+    user: getUser,
+
 };
+
+function userApi(user) {
+    return {
+	name: user.name,
+	taggedHome: function() {
+	    hub.userTaggedHome(user.name);
+	}
+    };
+}
 
 function getUser(arg) {
     for(var n = 0; n < settings.users.length; n++) {
 	var user = settings.users[n];
         if (typeof arg === 'function') {
-	    if (arg(user)) return user;
+	    if (arg(user)) return userApi(user);
         } else {
-	    if (user.name === arg) return user;
+	    if (user.name === arg) return userApi(user);
         }
     }
     return null;
