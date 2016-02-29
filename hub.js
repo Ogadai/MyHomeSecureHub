@@ -39,8 +39,10 @@ function Hub(settings, webClient, hubServer, stateList) {
             stateList.getState('Away').active(true);
         })
         .on('cameracommand', function (data) {
-            console.log('Requested node "' + data.Node + '" camera to ' + (data.Active ? 'on' : 'off'));
-            hubServer.getController(data.Node + '.camera').state(data.Active ? 'on' : 'off');
+	    var onType = data.Type ? data.Type : 'timelapse',
+		newState = (data.Active ? onType : 'off');
+            console.log('Requested node "' + data.Node + '" camera to ' + newState);
+            hubServer.getController(data.Node + '.camera').state(newState);
         })
 
     stateList.on('statechange', function (name, value) {
