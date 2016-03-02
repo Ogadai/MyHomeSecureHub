@@ -60,7 +60,8 @@ fs.readdirSync(rulesPath).forEach(function (file) {
 var evening = stateList.getState('Evening'),
     night = stateList.getState('Night'),
     morning = stateList.getState('Morning'),
-    away = stateList.getState('Away');
+    away = stateList.getState('Away'),
+    dark = stateList.getState('Dark');
 
 keypress(process.stdin);
 process.stdin.on('keypress', function (ch, key) {
@@ -71,15 +72,19 @@ process.stdin.on('keypress', function (ch, key) {
 	    break;
         case 'e':
             setTimeState('Evening');
+            dark.active(true);
             break;
         case 'n':
             setTimeState('Night');
+            dark.active(true);
             break;
         case 'm':
             setTimeState('Morning');
+            dark.active(false);
             break;
         case 'd':
             setTimeState('Day');
+            dark.active(false);
             break;
         case 'c':
             if (key.ctrl) {
