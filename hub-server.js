@@ -35,8 +35,14 @@ function HubServer(socketPort, nodeSettings) {
                 method: 'settings',
                 settings: nodeSettings
             });
+
+	    self.emit('connected', handler.name());
+	    self.emit(handler.name() + '.connected');
         })
         .on('close', function () {
+	    self.emit('disconnected', handler.name());
+	    self.emit(handler.name() + '.disconnected');
+
             delete nodeHandlers[handler.name()];
         })
         .on('sensor', function (data) {

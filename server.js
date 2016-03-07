@@ -20,7 +20,7 @@ var rulesApi = {
     controller: hubServer.getController,
     timer: hubServer.getTimer,
     user: getUser,
-
+    hubServer: hubServer
 };
 
 function userApi(user) {
