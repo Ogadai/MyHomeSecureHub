@@ -1,20 +1,12 @@
 ﻿var events = require('events');
 
 function Controller() {
-    var self = this,
-        state = '';
+    var self = this;
     events.EventEmitter.call(this);
-
-    self._reset = function () {
-        state = '';
-    }
 
     self.state = function (value) {
         if (arguments.length) {
-            if (state !== value) {
-                state = value;
-                self.emit('changed', state);
-            }
+            self.emit('changed', value);
             return this;
         }
         return state;
