@@ -6,12 +6,12 @@ function StateItem(name) {
 
     events.EventEmitter.call(this);
 
-    this.active = function (value) {
+    this.active = function (value, details) {
         if (arguments.length) {
             if (active !== value) {
                 active = value;
-                self.emit(value ? 'active' : 'reset');
-                self.emit('changed', value);
+                self.emit(value ? 'active' : 'reset', details);
+                self.emit('changed', value, details);
             }
             return this;
         }

@@ -11,12 +11,12 @@ function StateList(stateNames) {
 
     stateNames.forEach(function (name) {
         var state = new State(name);
-        state.on('changed', function (value) { anyStateChange(name, value); })
+        state.on('changed', function (value, details) { anyStateChange(name, value, details); })
         states[name.toLowerCase()] = state;
     });
 
-    function anyStateChange(name, value) {
-        self.emit('statechange', name, value);
+    function anyStateChange(name, value, details) {
+        self.emit('statechange', name, value, details);
     }
 }
 StateList.prototype.__proto__ = events.EventEmitter.prototype;
