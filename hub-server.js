@@ -24,7 +24,8 @@ function HubServer(socketPort, nodeSettings) {
 
     wsServer.on("request", function(request) {
       var connection = request.accept('echo-protocol', request.origin),
-          handler = new NodeHandler(connection);
+          handler = new NodeHandler(connection),
+	  pingInterval = setInterval(doPing, 10000);
 
       handler
         .on('initialised', function () {
@@ -40,10 +41,7 @@ function HubServer(socketPort, nodeSettings) {
 	    self.emit(handler.name() + '.connected');
         })
         .on('close', function () {
-	    self.emit('disconnected', handler.name());
-	    self.emit(handler.name() + '.disconnected');
-
-            delete nodeHandlers[handler.name()];
+	    closeConnection();
         })
         .on('sensor', function (data) {
             var sensorName = handler.name() + '.' + data.name;
@@ -51,6 +49,24 @@ function HubServer(socketPort, nodeSettings) {
                 sensors[sensorName]._message(data);
             }
         });
+
+	function doPing() {
+	    try {
+   	        nodeHandlers[handler.name()].send({ method: 'ping' });
+	    } catch (ex) {
+		console.log('Error pinging node "' + handler.name() + '"', ex);
+		closeConnection();
+	    }
+	}
+
+	function closeConnection() {
+	    clearInterval(pingInterval);
+
+	    self.emit('disconnected', handler.name());
+	    self.emit(handler.name() + '.disconnected');
+
+            delete nodeHandlers[handler.name()];
+	}
     })
 
     self.getSensor = function (name) {
