@@ -52,7 +52,7 @@ function HubServer(socketPort, nodeSettings) {
 
 	function doPing() {
 	    try {
-   	        nodeHandlers[handler.name()].send({ method: 'ping' });
+   	        handler.send({ method: 'ping' });
 	    } catch (ex) {
 		console.log('Error pinging node "' + handler.name() + '"', ex);
 		closeConnection();
