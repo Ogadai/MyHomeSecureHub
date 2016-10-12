@@ -37,11 +37,11 @@ function HubServer(socketPort, nodeSettings) {
                 settings: nodeSettings
             });
 
-	    self.emit('connected', handler.name());
-	    self.emit(handler.name() + '.connected');
+	        self.emit('connected', handler.name());
+	        self.emit(handler.name() + '.connected');
         })
         .on('close', function () {
-	    closeConnection();
+	        closeConnection();
         })
         .on('sensor', function (data) {
             var sensorName = handler.name() + '.' + data.name;
@@ -50,23 +50,23 @@ function HubServer(socketPort, nodeSettings) {
             }
         });
 
-	function doPing() {
-	    try {
-   	        handler.send({ method: 'ping' });
-	    } catch (ex) {
-		console.log('Error pinging node "' + handler.name() + '"', ex);
-		closeConnection();
-	    }
-	}
+        function doPing() {
+            try {
+                handler.send({ method: 'ping' });
+            } catch (ex) {
+                console.log('Error pinging node "' + handler.name() + '"', ex);
+                closeConnection();
+            }
+        }
 
-	function closeConnection() {
-	    clearInterval(pingInterval);
+        function closeConnection() {
+            clearInterval(pingInterval);
 
-	    self.emit('disconnected', handler.name());
-	    self.emit(handler.name() + '.disconnected');
+            self.emit('disconnected', handler.name());
+            self.emit(handler.name() + '.disconnected');
 
             delete nodeHandlers[handler.name()];
-	}
+    	}
     })
 
     self.getSensor = function (name) {
