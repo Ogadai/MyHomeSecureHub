@@ -1,10 +1,10 @@
 var WebSocketServer = require('websocket').server,
-    NodeHandler     = require('./node-handler'),
-    Sensor          = require('./sensor'),
-    Controller      = require('./controller'),
-    Timer           = require('./timer'),
-    http            = require('http'),
-    events          = require('events');
+    NodeHandler = require('./node-handler'),
+    Sensor = require('./sensor'),
+    Controller = require('./controller'),
+    Timer = require('./timer'),
+    http = require('http'),
+    events = require('events');
 
 function HubServer(socketPort, nodeSettings) {
     var self = this,
@@ -13,42 +13,42 @@ function HubServer(socketPort, nodeSettings) {
         controllers = {};
     events.EventEmitter.call(this);
 
-    var server = http.createServer(function(request, response) {});
-    server.listen(socketPort, function() {
-      console.log('Listing for hub messages on port ' + socketPort)
+    var server = http.createServer(function (request, response) { });
+    server.listen(socketPort, function () {
+        console.log('Listing for hub messages on port ' + socketPort)
     });
 
     var wsServer = new WebSocketServer({
-      httpServer: server
+        httpServer: server
     });
 
-    wsServer.on("request", function(request) {
-      var connection = request.accept('echo-protocol', request.origin),
-          handler = new NodeHandler(connection),
-	  pingInterval = setInterval(doPing, 10000);
+    wsServer.on("request", function (request) {
+        var connection = request.accept('echo-protocol', request.origin),
+            handler = new NodeHandler(connection),
+            pingInterval = setInterval(doPing, 10000);
 
-      handler
-        .on('initialised', function () {
-            nodeHandlers[handler.name()] = handler;
-            resetControllers(handler.name());
+        handler
+            .on('initialised', function () {
+                nodeHandlers[handler.name()] = handler;
+                resetControllers(handler.name());
 
-            handler.send({
-                method: 'settings',
-                settings: nodeSettings
+                handler.send({
+                    method: 'settings',
+                    settings: nodeSettings
+                });
+
+                self.emit('connected', handler.name());
+                self.emit(handler.name() + '.connected');
+            })
+            .on('close', function () {
+                closeConnection();
+            })
+            .on('sensor', function (data) {
+                var sensorName = handler.name() + '.' + data.name;
+                if (sensors[sensorName]) {
+                    sensors[sensorName]._message(data);
+                }
             });
-
-	        self.emit('connected', handler.name());
-	        self.emit(handler.name() + '.connected');
-        })
-        .on('close', function () {
-	        closeConnection();
-        })
-        .on('sensor', function (data) {
-            var sensorName = handler.name() + '.' + data.name;
-            if (sensors[sensorName]) {
-                sensors[sensorName]._message(data);
-            }
-        });
 
         function doPing() {
             try {
@@ -66,7 +66,7 @@ function HubServer(socketPort, nodeSettings) {
             self.emit(handler.name() + '.disconnected');
 
             delete nodeHandlers[handler.name()];
-    	}
+        }
     })
 
     self.getSensor = function (name) {
@@ -116,9 +116,9 @@ function HubServer(socketPort, nodeSettings) {
         var index = name.indexOf('.');
         if (index !== -1)
             return (index !== -1) ? {
-            node: name.substring(0, index),
-            item: name.substring(index + 1)
-        } : null;
+                node: name.substring(0, index),
+                item: name.substring(index + 1)
+            } : null;
     }
 }
 HubServer.prototype.__proto__ = events.EventEmitter.prototype;
