@@ -2,6 +2,7 @@ var WebClient = require('./web-client'),
     Hub = require('./hub'),
     HubServer = require('./hub-server'),
     StateList = require('./state-list'),
+    Notify = require('./notify'),
     settings = require('./settings'),
     path = require('path'),
     fs = require('fs'),
@@ -10,7 +11,8 @@ var WebClient = require('./web-client'),
 var webClient = new WebClient(settings.addr),
     hubServer = new HubServer(settings.hubPort, nodeSettings()),
     stateList = new StateList(settings.states),
-    hub = new Hub(settings, webClient, hubServer, stateList);
+    hub = new Hub(settings, webClient, hubServer, stateList),
+    notify = new Notify(settings.notifyHost)
 
 webClient.connect();
 
@@ -20,7 +22,8 @@ var rulesApi = {
     controller: hubServer.getController,
     timer: hubServer.getTimer,
     user: getUser,
-    hubServer: hubServer
+    hubServer: hubServer,
+    notify: notify
 };
 
 function userApi(user) {
