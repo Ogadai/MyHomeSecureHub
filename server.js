@@ -16,6 +16,7 @@ var webClient = new WebClient(settings.addr),
 
 webClient.connect();
 
+var keyRules = [];
 var rulesApi = {
     state: stateList.getState,
     sensor: hubServer.getSensor,
@@ -23,7 +24,10 @@ var rulesApi = {
     timer: hubServer.getTimer,
     user: getUser,
     hubServer: hubServer,
-    notify: notify
+    notify: notify,
+    key: {
+        on: (key, callbackFn) => keyRules.push({ key, callbackFn })
+    }
 };
 
 function userApi(user) {
@@ -69,10 +73,16 @@ var evening = stateList.getState('Evening'),
 keypress(process.stdin);
 process.stdin.on('keypress', function (ch, key) {
     if (key) {
+        const keyRule = keyRules.find(r => r.key === key.name)
+        if (keyRule) {
+            keyRule.callbackFn();
+            return;
+        }
+        
         switch (key.name) {
-	case 'a':
-	    away.active(!away.active());
-	    break;
+        case 'a':
+            away.active(!away.active());
+            break;
         case 'e':
             setTimeState('Evening');
             dark.active(true);
