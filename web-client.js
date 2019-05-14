@@ -15,11 +15,11 @@ function WebClient(serverAddr) {
 	    try {
                 client.send(JSON.stringify(data));
 	    } catch (e) {
-		console.error("Error sending message to Azure - " + e.message);
+		    consoleError("Error sending message to Azure - " + e.message);
                 //bufferedMessages.push(data);
 	        client.close();
-		client = null;
-		connected = false;
+            client = null;
+            connected = false;
 	        setTimeout(self.connect, 10000);
 	    }
         } else {
@@ -30,10 +30,10 @@ function WebClient(serverAddr) {
     this.connect = function() {
 	if (client) return;
         client = new W3CWebSocket(serverAddr + 'homehub', 'echo-protocol');
-        console.log((openedOnce ? 'Reconnecting' : 'Connecting') + ' to Azure - ' + serverAddr);
+        consoleLog((openedOnce ? 'Reconnecting' : 'Connecting') + ' to Azure - ' + serverAddr);
 
         client.onopen = function () {
-            console.log((new Date()).toLocaleTimeString() + ': ' + (openedOnce ? 'Reconnected' : 'Connected') + ' to Azure');
+            consoleLog((openedOnce ? 'Reconnected' : 'Connected') + ' to Azure');
             openedOnce = true;
 	    connected = true;
 
@@ -42,14 +42,14 @@ function WebClient(serverAddr) {
         };
 
         client.onclose = function e() {
-            console.log('Disconnected from Azure - ' + e.reason + '. Attempting reconnect in 10 seconds');
+            consoleLog('Disconnected from Azure - ' + e.reason + '. Attempting reconnect in 10 seconds');
             client = null;
 	    connected = false;
             setTimeout(self.connect, 10000);
         };
 
         client.onerror = function () {
-            console.log('Error connecting to Azure. Attempting reconnect in 10 seconds');
+            consoleLog('Error connecting to Azure. Attempting reconnect in 10 seconds');
             client = null;
 	    connected = false;
             setTimeout(self.connect, 10000);
@@ -63,15 +63,13 @@ function WebClient(serverAddr) {
         };
     }
 
-//    function ping() {
-//	if (client) {
-//	    self.send({
-//                Method: 'ChangeStates',
-//                States: []
-//            });
-//	}
-//    }
-//    setInterval(ping, 60000);
+    function consoleLog(message) {
+        console.log((new Date()).toLocaleTimeString() + ': ' + message);
+    }
+
+    function consoleError(message) {
+        console.error((new Date()).toLocaleTimeString() + ': ' + message);
+    }
 
     function clearBuffer() {
         if (bufferedMessages.length > 0) {
