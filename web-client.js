@@ -27,6 +27,14 @@ function WebClient(serverAddr) {
         }
     }
 
+    this.reconnect = function() {
+        consoleLog('Reconnecting to Azure');
+        client.close();
+        client = null;
+        connected = false;
+        setTimeout(self.connect, 1000);
+    }
+
     this.connect = function() {
 	if (client) return;
         client = new W3CWebSocket(serverAddr + 'homehub', 'echo-protocol');

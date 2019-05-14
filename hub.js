@@ -30,6 +30,7 @@ function Hub(settings, webClient, hubServer, stateList) {
             });
         })
         .on('changestates', function (data) {
+            pingReceived();
             data.States.forEach(function (s) {
                 console.log('Initialising state: ' + s.Name + '=' + s.Active);
                 stateList.getState(s.Name).active(s.Active);
@@ -63,6 +64,15 @@ function Hub(settings, webClient, hubServer, stateList) {
             ]
         });
     });
+
+    let pingTimeout;
+    function pingReceived() {
+        if (pingTimeout) clearTimeout(pingTimeout);
+        pingTimeout = setTimeout(function() {
+            console.log((new Date()).toLocaleTimeString() + ': No ping received for 120 seconds.');
+            webClient.reconnect();
+        }, 120000)
+    };
 
     this.userTaggedHome = function (userName) {
         webClient.send({
