@@ -9,9 +9,8 @@
     "watch": "nodemon server.js"
   },
   "dependencies": {
-    "extend": "^3.0.0",
-    "https": "^1.0.0",
+    "extend": "^3.0.2",
     "keypress": "^0.2.1",
-    "websocket": "^1.0.22"
+    "websocket": "^1.0.30"
   }
 }
