@@ -3,7 +3,7 @@
 
 function Notify(hostOptions) {
     this.post = function (action, message) {
-        var data = JSON.stringify(message);
+        var data = message ? JSON.stringify(message) : '';
 
         var options = extend({
             method: 'POST',
