@@ -6,10 +6,12 @@
   "scripts": {
     "start": "node server.js",
     "watch-git": "watch -n 10 git pull &",
-    "watch": "nodemon server.js"
+    "watch": "nodemon server.js",
+    "create-token": "node google/get-token.js"
   },
   "dependencies": {
     "extend": "^3.0.2",
+    "googleapis": "^39.2.0",
     "keypress": "^0.2.1",
     "websocket": "^1.0.30"
   }

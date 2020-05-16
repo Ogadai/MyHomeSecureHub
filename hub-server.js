@@ -1,10 +1,14 @@
 var WebSocketServer = require('websocket').server,
+    http = require('http'),
+    events = require('events'),
     NodeHandler = require('./node-handler'),
     Sensor = require('./sensor'),
     Controller = require('./controller'),
     Timer = require('./timer'),
-    http = require('http'),
-    events = require('events');
+    GoogleDrive = require('./google/google-drive');
+
+const googleDrive = new GoogleDrive()
+const credentialsPromise = googleDrive.getCredentialsAndToken()
 
 function HubServer(socketPort, nodeSettings) {
     var self = this,
@@ -32,10 +36,12 @@ function HubServer(socketPort, nodeSettings) {
                 nodeHandlers[handler.name()] = handler;
                 resetControllers(handler.name());
 
-                handler.send({
-                    method: 'settings',
-                    settings: nodeSettings
-                });
+                credentialsPromise.then(drive => {
+                    handler.send({
+                        method: 'settings',
+                        settings: {...nodeSettings, drive }
+                    });
+                })
 
                 self.emit('connected', handler.name());
                 self.emit(handler.name() + '.connected');
