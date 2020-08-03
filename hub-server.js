@@ -5,6 +5,7 @@ var WebSocketServer = require('websocket').server,
     Sensor = require('./sensor'),
     Controller = require('./controller'),
     Timer = require('./timer'),
+    webApp = require('./web-app'),
     GoogleDrive = require('./google/google-drive');
 
 const googleDrive = new GoogleDrive()
@@ -17,7 +18,8 @@ function HubServer(socketPort, nodeSettings) {
         controllers = {};
     events.EventEmitter.call(this);
 
-    var server = http.createServer(function (request, response) { });
+    const app = webApp();
+    var server = http.createServer(app);
     server.listen(socketPort, function () {
         console.log('Listing for hub messages on port ' + socketPort)
     });
@@ -29,7 +31,8 @@ function HubServer(socketPort, nodeSettings) {
     wsServer.on("request", function (request) {
         var connection = request.accept('echo-protocol', request.origin),
             handler = new NodeHandler(connection),
-            pingInterval = setInterval(doPing, 10000);
+            pingInterval = setInterval(doPing, 10000),
+            cameraOn = false;
 
         handler
             .on('initialised', function () {
@@ -54,6 +57,16 @@ function HubServer(socketPort, nodeSettings) {
                 if (sensors[sensorName]) {
                     sensors[sensorName]._message(data);
                 }
+            })
+            .on('websocket', function (data) {
+                const { status, address } = data;
+                if (status === 'started') {
+                    cameraOn = true;
+                    app.startedCamera(handler.name(), address);
+                } else if (status === 'stopped') {
+                    cameraOn = false;
+                    app.stoppedCamera(handler.name());
+                }
             });
 
         function doPing() {
@@ -66,6 +79,9 @@ function HubServer(socketPort, nodeSettings) {
         }
 
         function closeConnection() {
+            if (cameraOn) {
+                app.stoppedCamera(handler.name());
+            }
             clearInterval(pingInterval);
 
             self.emit('disconnected', handler.name());
