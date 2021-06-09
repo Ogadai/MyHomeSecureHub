@@ -36,6 +36,10 @@ function WebClient(serverAddr) {
     }
 
     this.connect = function() {
+        if (!serverAddr) {
+            console.log('No configured server address');
+            return;
+        }
 	if (client) return;
         client = new W3CWebSocket(serverAddr + 'homehub', 'echo-protocol');
         consoleLog((openedOnce ? 'Reconnecting' : 'Connecting') + ' to Azure - ' + serverAddr);

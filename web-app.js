@@ -2,6 +2,8 @@
 
 const express = require('express');
 const path = require('path');
+const settings = require('./settings');
+
 let cameraFeeds = [];
 
 module.exports = function() {
@@ -11,23 +13,30 @@ module.exports = function() {
         res.header("Access-Control-Allow-Origin", "http://localhost:3000");
         res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
         res.json({
-            cameras: cameraFeeds
+            cameras: cameraFeeds,
+            recordings: settings.recordings
         });
     });
 
     app.use(express.static(path.join(__dirname, 'public')));
 
-    app.startedCamera = (name, address) => {
-        console.log(`Connected camera: ${name} at ${address}`);
+    app.startedCamera = (name, address, type) => {
+        console.log(`Connected ${type} camera: ${name} at ${address}`);
         cameraFeeds = cameraFeeds
-            .filter(f => f.name !== name)
-            .concat([{ name: name, address }]);
+            .filter(f => f.address !== address)
+            .concat([{ name: name, address, type }]);
     }
     
-    app.stoppedCamera = (name) => {
-        console.log(`Disconnected camera: ${name}`);
-        cameraFeeds = cameraFeeds
-            .filter(f => f.name !== name);
+    app.stoppedCamera = (name, address) => {
+        if (address) {
+            console.log(`Disconnected camera: ${name} at ${address}`);
+            cameraFeeds = cameraFeeds
+                .filter(f => f.address !== address);
+        } else {
+            console.log(`Disconnected camera: ${name}`);
+            cameraFeeds = cameraFeeds
+                .filter(f => f.name !== name);
+        }
     }
     
     return app;

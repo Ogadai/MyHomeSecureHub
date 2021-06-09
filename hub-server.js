@@ -59,13 +59,13 @@ function HubServer(socketPort, nodeSettings) {
                 }
             })
             .on('websocket', function (data) {
-                const { status, address } = data;
+                const { status, address, name, type } = data;
                 if (status === 'started') {
                     cameraOn = true;
-                    app.startedCamera(handler.name(), address);
+                    app.startedCamera(name || handler.name(), address, type);
                 } else if (status === 'stopped') {
                     cameraOn = false;
-                    app.stoppedCamera(handler.name());
+                    app.stoppedCamera(name || handler.name(), address);
                 }
             });
 
