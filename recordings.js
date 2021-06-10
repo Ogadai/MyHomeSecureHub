@@ -49,15 +49,5 @@ module.exports = function() {
     });
 
     app.use('/files', express.static(fullPath));
-
-    // app.get('/clip/:name/:day/:file', (req, res) => {
-    //   allowLocal(res);
-    //   const { name, day, file } = req.params;
-    //   const filePath = path.join(fullPath, name, day, file);
-
-    //   console.log('sending file', filePath)
-    //   res.sendFile(filePath);
-    // });
-
     return app;
 }
