@@ -3,20 +3,27 @@
 const express = require('express');
 const path = require('path');
 const settings = require('./settings');
+const recordings = require('./recordings');
 
 let cameraFeeds = [];
+
+const allowLocal = res => {
+    res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+};
 
 module.exports = function() {
     const app = express();
 
     app.get('/cameras', (req, res) => {
-        res.header("Access-Control-Allow-Origin", "http://localhost:3000");
-        res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+        allowLocal(res);
         res.json({
             cameras: cameraFeeds,
             recordings: settings.recordings
         });
     });
+
+    app.use('/recordings', recordings());
 
     app.use(express.static(path.join(__dirname, 'public')));
 

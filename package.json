@@ -4,9 +4,8 @@
   "description": "Hub for home secure service",
   "author": "Andy Lee <andy.lee.surfer@gmail.com>",
   "scripts": {
-    "start": "node server.js",
+    "start": "nodemon server.js",
     "watch-git": "watch -n 10 git pull &",
-    "watch": "nodemon server.js",
     "create-token": "node google/get-token.js"
   },
   "dependencies": {
@@ -15,5 +14,8 @@
     "googleapis": "^39.2.0",
     "keypress": "^0.2.1",
     "websocket": "^1.0.30"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7"
   }
 }
