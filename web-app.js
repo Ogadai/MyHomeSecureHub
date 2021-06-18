@@ -24,8 +24,12 @@ module.exports = function() {
     });
 
     app.use('/recordings', recordings());
-
+        
     app.use(express.static(path.join(__dirname, 'public')));
+
+    app.get('*', (req, res) => {
+        res.sendFile(path.resolve(__dirname, 'public', 'index.html'));
+    });
 
     app.startedCamera = (name, address, type) => {
         console.log(`Connected ${type} camera: ${name} at ${address}`);

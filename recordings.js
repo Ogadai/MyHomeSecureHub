@@ -13,7 +13,7 @@ const allowLocal = res => {
 };
 
 const readdir = path => new Promise((resolve, reject) => {
-  fs.readdir(path, (err, files) => {
+  fs.readdir(path, { withFileTypes: true }, (err, files) => {
     if (err) {
       reject(err)
     } else {
@@ -22,6 +22,14 @@ const readdir = path => new Promise((resolve, reject) => {
   })
 })
 
+const readfolders = path => readdir(path).then(
+  items => items.filter(i => i.isDirectory()).map(i => i.name)
+);
+
+const readfiles = path => readdir(path).then(
+  items => items.filter(i => i.isFile()).map(i => i.name)
+);
+
 module.exports = function() {
     const app = express.Router();
     const fullPath = path.join(__dirname, settings.recordingsPath);
@@ -29,10 +37,10 @@ module.exports = function() {
     app.get('/cameras', async (req, res) => {
         allowLocal(res);
 
-        const camFolders = await readdir(fullPath);
+        const camFolders = await readfolders(fullPath);
         const cameras = await Promise.all(
           camFolders.map(async name => {
-            const days = await readdir(path.join(fullPath, name));
+            const days = await readfolders(path.join(fullPath, name));
             return { name, days };
           })
         )
@@ -43,9 +51,24 @@ module.exports = function() {
     app.get('/clips/:name/:day', async (req, res) => {
         allowLocal(res);
         const { name, day } = req.params;
-        const files = await readdir(path.join(fullPath, name, day));
+        const files = await readfiles(path.join(fullPath, name, day));
 
         res.json({ files });
+    });
+
+    app.post('/store/:name/:day/:file', async (req, res, next) => {
+      allowLocal(res);
+      const { name, day, file } = req.params;
+      const src = path.join(fullPath, name, day, file);
+      const dest = path.join(fullPath, name, `${day}_${file}`);
+
+      fs.copyFile(src, dest, fs.constants.COPYFILE_EXCL, err => {
+        if (err) {
+          res.status(500).send({ error: err.message });
+        } else {
+          res.json({ message: 'Copied', src, dest });
+        }
+      });
     });
 
     app.use('/files', express.static(fullPath));
