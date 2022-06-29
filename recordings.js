@@ -33,6 +33,7 @@ const readfiles = path => readdir(path).then(
 module.exports = function() {
     const app = express.Router();
     const fullPath = path.join(__dirname, settings.recordingsPath);
+    const recordingsUrl = settings.recordings;
 
     app.get('/cameras', async (req, res) => {
         allowLocal(res);
@@ -41,7 +42,11 @@ module.exports = function() {
         const cameras = await Promise.all(
           camFolders.map(async name => {
             const days = await readfolders(path.join(fullPath, name));
-            return { name, days };
+            return {
+              name,
+              days,
+              url: recordingsUrl ? `${recordingsUrl}/${name}` : null
+            };
           })
         )
 
